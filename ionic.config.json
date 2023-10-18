@@ -1,0 +1,7 @@
+{
+  "name": "lexis",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
