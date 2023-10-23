@@ -1,5 +1,9 @@
 {
-    "recommendations": [
-        "ionic.ionic"
-    ]
+  "recommendations": [
+    "ionic.ionic",
+    "ms-vscode.vscode-typescript-next",
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin",
+    "bradlc.vscode-tailwindcss"
+  ]
 }

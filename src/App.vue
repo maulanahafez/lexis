@@ -1,8 +1,8 @@
 <template>
   <kProvider>
-    <ion-app>
-      <ion-router-outlet />
-    </ion-app>
+    <IonApp>
+      <IonRouterOutlet />
+    </IonApp>
   </kProvider>
 </template>
 

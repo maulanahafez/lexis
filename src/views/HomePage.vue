@@ -7,24 +7,35 @@
     </IonHeader>
 
     <IonContent :fullscreen="true">
-      <IonHeader collapse="condense">
-        <IonToolbar>
-          <IonTitle size="large">Blank</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>
-          Start with Ionic
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://ionicframework.com/docs/components"
-            >UI Components</a
-          >
-        </p>
+      <div v-if="!user">
+        <kButton @click="basicOpened = !basicOpened" :inline="true"
+          >Click Dialog</kButton
+        >
+        <kButton @click="signinPopup()">Sign In With Google</kButton>
       </div>
+      <div v-else>
+        <p>{{ user }}</p>
+        <p @click="signOutUser()">Sign Out</p>
+        <RouterLink :to="{ path: 'story' }">Story Link</RouterLink>
+        <p @click="router.push('/story')">Story</p>
+      </div>
+      <kDialog
+        :opened="basicOpened"
+        @backdropclick="() => (basicOpened = false)"
+      >
+        <template #title>Dialog Title</template>
+        Dialog is a type of modal window that appears in front of app content to
+        provide critical information, or prompt for a decision to be made.
+
+        <template #buttons>
+          <kDialogButton @click="() => (basicOpened = false)">
+            Action 2
+          </kDialogButton>
+          <kDialogButton @click="() => (basicOpened = false)">
+            Action 1
+          </kDialogButton>
+        </template>
+      </kDialog>
     </IonContent>
   </IonPage>
 </template>
@@ -37,34 +48,33 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/vue";
+import { signInWithPopup, signOut } from "firebase/auth";
+import { kButton, kDialog, kDialogButton } from "konsta/vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useCurrentUser, useFirebaseAuth } from "vuefire";
+
+const router = useRouter();
+const error = ref();
+const basicOpened = ref(false);
+const auth = useFirebaseAuth()!;
+const user = useCurrentUser();
+console.log(user.value?.providerData);
+
+function signinPopup() {
+  error.value = null;
+  signInWithPopup(auth, googleAuthProvider).catch((reason) => {
+    console.error("Failed sign", reason);
+    error.value = reason;
+  });
+}
+
+function signOutUser() {
+  signOut(auth);
+}
 </script>
 
-<style scoped>
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-</style>
+<script lang="ts">
+import { GoogleAuthProvider } from "firebase/auth";
+export const googleAuthProvider = new GoogleAuthProvider();
+</script>
