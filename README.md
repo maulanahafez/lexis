@@ -48,6 +48,7 @@ This project uses several front-end frameworks, libraries, and tools. Below is a
 
 - Vue: [Documentation](https://vuejs.org/)
 - Vue Router: [Documentation](https://router.vuejs.org/)
+- Ionic: [Documentation](https://ionicframework.com/docs)
 
 **HTTP Client:**
 
