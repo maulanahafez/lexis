@@ -12,7 +12,12 @@ const konstaConfig = require("konsta/config");
 module.exports = konstaConfig({
   content: ["./src/**/*.vue", "./src/*.vue"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        ios: ["Poppins", "sans-serif"],
+        material: ["Poppins", "sans-serif"],
+      },
+    },
   },
   plugins: [],
 });

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "439357735038",
+    "project_id": "lexis-ca8e5",
+    "storage_bucket": "lexis-ca8e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439357735038:android:ee0bc5faf9d4978d4e982f",
+        "android_client_info": {
+          "package_name": "com.hafez.lexis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439357735038-84r3uf0aec5s7vmv987kpjch34fqf5nd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hafez.lexis",
+            "certificate_hash": "0de811ec742d6ae87d9a2a2774335a1000ce624f"
+          }
+        },
+        {
+          "client_id": "439357735038-8rsitee123b7thdi4amfmpc9ha26nvod.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzfqp8Nr_gHjC4HSPVZ6ltAOqHlTjcnjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439357735038-8rsitee123b7thdi4amfmpc9ha26nvod.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

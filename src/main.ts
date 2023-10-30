@@ -1,9 +1,16 @@
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 import { IonicVue } from "@ionic/vue";
+import axios from "axios";
+import "dotenv";
+import { initializeApp } from "firebase/app";
+import {
+  browserLocalPersistence,
+  getAuth,
+  setPersistence,
+} from "firebase/auth";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
-import { VueFire, VueFireAuth } from "vuefire";
 import App from "./App.vue";
-import { firebaseApp } from "./firebase/firebase";
 import router from "./router";
 
 /* TailwindCSS */
@@ -25,12 +32,27 @@ import "@ionic/vue/css/text-transformation.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-const pinia = createPinia();
-const app = createApp(App).use(IonicVue).use(router).use(pinia);
-app.use(VueFire, {
-  firebaseApp,
-  modules: [VueFireAuth()],
-});
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCB3yJBOXXPHSY3dHT249exPV1mchutZr0",
+  authDomain: "lexis-ca8e5.firebaseapp.com",
+  projectId: "lexis-ca8e5",
+  storageBucket: "lexis-ca8e5.appspot.com",
+  messagingSenderId: "439357735038",
+  appId: "1:439357735038:web:2c2de54b104f8cda4e982f",
+  measurementId: "G-59P8D44X9Z",
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth();
+setPersistence(auth, browserLocalPersistence);
+
+const app = createApp(App)
+  .use(IonicVue)
+  .use(router)
+  .use(createPinia())
+  .use(autoAnimatePlugin);
 
 router.isReady().then(() => {
   app.mount("#app");
