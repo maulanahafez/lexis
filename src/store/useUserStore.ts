@@ -1,10 +1,10 @@
-import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
-import axios, { AxiosResponse } from "axios";
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import axios, { AxiosResponse } from 'axios';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-export const useUserStore = defineStore("user", function () {
+export const useUserStore = defineStore('user', function () {
   FirebaseAuthentication.signInWithGoogle();
   interface User {
     id?: string | undefined | null;
@@ -28,17 +28,6 @@ export const useUserStore = defineStore("user", function () {
     photoUrl: null,
   });
 
-  // getAuth().onAuthStateChanged((user) => {
-  //   if (user) {
-  //     getUser();
-  //     router.push("/home");
-  //   } else {
-  //     router.push("/");
-  //   }
-  // });
-
-  // console.log(getAuth().currentUser);
-
   const isSignIn = ref<boolean>(false);
   const router = useRouter();
 
@@ -46,14 +35,14 @@ export const useUserStore = defineStore("user", function () {
     await FirebaseAuthentication.signInWithGoogle();
     isSignIn.value = true;
     getUser();
-    router.push("/home");
+    router.push('/home');
   }
 
   async function googleSignOut() {
     await FirebaseAuthentication.signOut();
     clearUser();
     isSignIn.value = false;
-    router.push("/");
+    router.push('/');
   }
 
   async function getUser() {
@@ -64,11 +53,11 @@ export const useUserStore = defineStore("user", function () {
       email: currentUser.user?.email,
       photoUrl: currentUser.user?.photoUrl,
     };
-    const res: AxiosResponse = await axios.post("/user", formData);
+    const res: AxiosResponse = await axios.post('/user', formData);
     const data = res.data.data;
-    user.value!.uid = formData.uid;
-    user.value!.name = formData.name;
-    user.value!.email = formData.email;
+    user.value!.uid = data.uid;
+    user.value!.name = data.name;
+    user.value!.email = data.email;
     user.value!.photoUrl = formData.photoUrl;
     user.value!.id = data.id;
     user.value!.username = data.username;
@@ -76,8 +65,27 @@ export const useUserStore = defineStore("user", function () {
     user.value!.story_preferences = data.story_preferences;
   }
 
+  async function updateUser(formData: any) {
+    try {
+      const res: AxiosResponse = await axios.post('/user', formData);
+      const data = res.data.data;
+      user.value!.uid = data.uid;
+      user.value!.name = data.name;
+      user.value!.email = data.email;
+      user.value!.photoUrl = data.photoUrl;
+      user.value!.id = data.id;
+      user.value!.username = data.username;
+      user.value!.bio = data.bio;
+      user.value!.story_preferences = data.story_preferences;
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+
   async function isUsernameUnique(username: string) {
-    const res = await axios.get("user/username_unique", {
+    const res = await axios.get('user/username_unique', {
       params: { username },
     });
     return res.data;
@@ -98,6 +106,7 @@ export const useUserStore = defineStore("user", function () {
     isSignIn,
     googleSignIn,
     getUser,
+    updateUser,
     googleSignOut,
     isUsernameUnique,
   };

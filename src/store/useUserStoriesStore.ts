@@ -26,7 +26,6 @@ export const useUserStoriesStore = defineStore("user-stories", function () {
       );
       const data: Story[] = res.data;
       userStories.value = data;
-      console.log(userStories.value);
     } catch (error) {
       console.log(error);
     }

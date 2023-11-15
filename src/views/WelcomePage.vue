@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import Welcome1 from "@/components/welcomePage/Welcome1.vue";
-import Welcome2 from "@/components/welcomePage/Welcome2.vue";
-import Welcome3 from "@/components/welcomePage/Welcome3.vue";
-import { useUserStore } from "@/store/useUserStore";
-import { vAutoAnimate } from "@formkit/auto-animate/vue";
-import { IonPage } from "@ionic/vue";
-import { getAuth } from "firebase/auth";
-import { ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import Welcome1 from '@/components/welcomePage/Welcome1.vue';
+import Welcome2 from '@/components/welcomePage/Welcome2.vue';
+import Welcome3 from '@/components/welcomePage/Welcome3.vue';
+import { useUserStore } from '@/store/useUserStore';
+import { vAutoAnimate } from '@formkit/auto-animate/vue';
+import { IonPage } from '@ionic/vue';
+import { getAuth } from 'firebase/auth';
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const auth = getAuth();
 const store = useUserStore();
@@ -34,7 +34,7 @@ const restartActivePage = () => {
 };
 
 watch(
-  () => route.path == "/welcome",
+  () => route.path == '/welcome',
   () => {
     restartActivePage();
   }

@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import AppTabs from "@/components/AppTabs.vue";
-import { IonPage } from "@ionic/vue";
+import AppTabs from '@/components/AppTabs.vue';
+import { IonContent, IonHeader, IonPage } from '@ionic/vue';
 </script>
 <template>
-  <IonPage> Hello</IonPage>
-  <AppTabs></AppTabs>
+  <IonPage>
+    <IonHeader></IonHeader>
+    <IonContent>Hello</IonContent>
+    <AppTabs />
+  </IonPage>
 </template>

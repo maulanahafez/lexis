@@ -19,12 +19,12 @@ const router = useRouter();
 const store = useUserStore();
 onAuthStateChanged(auth, (u) => {
   if (u) {
-    console.log("Signing In...");
+    // console.log("Signing In...");
     store.getUser();
     router.push("/home");
-    console.log("Sign In Success!");
+    // console.log("Sign In Success!");
   } else {
-    console.log("Not Sign In!");
+    // console.log("Not Sign In!");
     router.push("/welcome");
   }
 });

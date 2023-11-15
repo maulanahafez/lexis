@@ -1,38 +1,45 @@
-import ProfilePage from "@/views/ProfilePage.vue";
-import WelcomePage from "@/views/WelcomePage.vue";
-import { createRouter, createWebHistory } from "@ionic/vue-router";
-import { RouteRecordRaw } from "vue-router";
-import HomePage from "../views/HomePage.vue";
+import HomePage from '@/views/HomePage.vue';
+import SearchPage from '@/views/SearchPage.vue';
+import WelcomePage from '@/views/WelcomePage.vue';
+import ProfilePage from '@/views/profile/ProfilePage.vue';
+import ProfileSettingPage from '@/views/profile/SettingPage.vue';
+import { createRouter, createWebHistory } from '@ionic/vue-router';
+import { RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    redirect: "/welcome",
+    path: '/',
+    redirect: '/welcome',
   },
   {
-    path: "/welcome",
-    name: "Welcome",
+    path: '/welcome',
+    name: 'Welcome',
     component: WelcomePage,
   },
   {
-    path: "/home",
-    name: "Home",
+    path: '/home',
+    name: 'Home',
     component: HomePage,
   },
   {
-    path: "/search",
-    name: "Search",
+    path: '/search',
+    name: 'Search',
+    component: SearchPage,
+  },
+  {
+    path: '/bookshelf',
+    name: 'Bookshelf',
     component: HomePage,
   },
   {
-    path: "/bookshelf",
-    name: "Bookshelf",
-    component: HomePage,
-  },
-  {
-    path: "/profile",
-    name: "Profile",
+    path: '/profile',
+    name: 'Profile',
     component: ProfilePage,
+  },
+  {
+    path: '/profile/setting',
+    name: 'Profile Setting',
+    component: ProfileSettingPage,
   },
 ];
 

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from "vue";
-
 const props = defineProps<{
   photoUrl: string | null;
   name: string | null;
