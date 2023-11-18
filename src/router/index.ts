@@ -2,7 +2,12 @@ import ProfilePage from "@/views/ProfilePage.vue";
 import WelcomePage from "@/views/WelcomePage.vue";
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
-import HomePage from "../views/HomePage.vue";
+import HomePage from "@/views/HomePage.vue";
+import BookshelfPage from "@/views/Bookshelf.vue";
+import BookshelfAdd from "@/views/bookshelf/AddStory.vue";
+import BookshelfStory from "@/views/bookshelf/DetailStory.vue";
+import BookshelfChapter from "@/views/bookshelf/AddChapter.vue";
+import BookshelfChapterContent from "@/views/bookshelf/ChapterContent.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,7 +32,28 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/bookshelf",
     name: "Bookshelf",
-    component: HomePage,
+    component: BookshelfPage,
+  },
+  {
+    path: "/bookshelf/add",
+    name: "Bookshelf Add",
+    component: BookshelfAdd,
+  },
+  {
+    path: "/bookshelf/story/:storyId",
+    name: "story",
+    component: BookshelfStory,
+    props: true,
+  },
+  {
+    path: "/bookshelf/chapter",
+    name: "Chapter",
+    component: BookshelfChapter,
+  },
+  {
+    path: "/bookshelf/chapter/content",
+    name: "Chapter Content",
+    component: BookshelfChapterContent,
   },
   {
     path: "/profile",

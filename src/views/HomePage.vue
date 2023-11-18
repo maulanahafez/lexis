@@ -3,9 +3,7 @@
     <IonContent>
       <kButton @click="store.googleSignOut()">Sign Out</kButton>
       <div>{{ store.user }}</div>
-      <div @click="$router.push('/profile')" class="cursor-pointer">
-        Profile
-      </div>
+      <div @click="$router.push('/profile')" class="cursor-pointer">Profile</div>
       <AppTabs></AppTabs>
     </IonContent>
   </IonPage>

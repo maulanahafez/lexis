@@ -21,7 +21,7 @@ onAuthStateChanged(auth, (u) => {
   if (u) {
     console.log("Signing In...");
     store.getUser();
-    router.push("/home");
+    router.push("/bookshelf/story/54");
     console.log("Sign In Success!");
   } else {
     console.log("Not Sign In!");

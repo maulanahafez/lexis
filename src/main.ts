@@ -31,6 +31,7 @@ import "@ionic/vue/css/text-alignment.css";
 import "@ionic/vue/css/text-transformation.css";
 /* Theme variables */
 import "./theme/variables.css";
+import { QuillEditor } from "@vueup/vue-quill";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
@@ -53,6 +54,8 @@ const app = createApp(App)
   .use(router)
   .use(createPinia())
   .use(autoAnimatePlugin);
+
+app.component('QuillEditor', QuillEditor)
 
 router.isReady().then(() => {
   app.mount("#app");
