@@ -1,13 +1,14 @@
-import ProfilePage from "@/views/profile/ProfilePage.vue";
 import WelcomePage from "@/views/WelcomePage.vue";
-import { createRouter, createWebHistory } from "@ionic/vue-router";
 import { RouteRecordRaw } from "vue-router";
 import HomePage from "@/views/HomePage.vue";
+import { createRouter, createWebHistory } from "@ionic/vue-router";
 import BookshelfPage from "@/views/Bookshelf.vue";
 import BookshelfAdd from "@/views/bookshelf/AddStory.vue";
 import BookshelfStory from "@/views/bookshelf/DetailStory.vue";
 import BookshelfChapter from "@/views/bookshelf/AddChapter.vue";
 import BookshelfChapterContent from "@/views/bookshelf/ChapterContent.vue";
+import ProfilePage from "@/views/profile/ProfilePage.vue";
+import ProfileSettingPage from '@/views/profile/SettingPage.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -59,6 +60,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/profile",
     name: "Profile",
     component: ProfilePage,
+  },
+  {
+    path: '/profile/setting',
+    name: 'Profile Setting',
+    component: ProfileSettingPage,
   },
 ];
 
