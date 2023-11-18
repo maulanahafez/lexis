@@ -7,7 +7,7 @@ import { useUserStoriesStore } from "@/store/useUserStoriesStore";
 import { vAutoAnimate } from "@formkit/auto-animate/vue";
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar } from "@ionic/vue";
 import { ellipsisVerticalOutline } from "ionicons/icons";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
@@ -21,10 +21,26 @@ const changeActiveTabs = (active: number): void => {
   activeSlide.value = active;
 };
 
-onMounted(async () => {
+const getUserStories = async () => {
   await userStoriesStore.getUserStories();
   isLoading.value = false;
+};
+
+const profileSetting = ref<boolean>(false);
+
+onMounted(async () => {
+  await getUserStories();
 });
+
+watch(
+  () => route.path,
+  async (newValue, oldValue) => {
+    if (newValue === "/profile") {
+      isLoading.value = true;
+      await getUserStories();
+    }
+  }
+);
 </script>
 <template>
   <IonPage>
@@ -32,7 +48,7 @@ onMounted(async () => {
       <IonToolbar>
         <IonTitle>Profile</IonTitle>
         <IonButtons slot="end">
-          <IonButton>
+          <IonButton @click="router.push('/profile/setting')">
             <IonIcon :icon="ellipsisVerticalOutline"></IonIcon>
           </IonButton>
         </IonButtons>
