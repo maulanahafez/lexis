@@ -1,6 +1,10 @@
+import BookshelfPage from '@/views/Bookshelf.vue';
 import HomePage from '@/views/HomePage.vue';
-import SearchPage from '@/views/SearchPage.vue';
 import WelcomePage from '@/views/WelcomePage.vue';
+import BookshelfChapter from '@/views/bookshelf/AddChapter.vue';
+import BookshelfAdd from '@/views/bookshelf/AddStory.vue';
+import BookshelfChapterContent from '@/views/bookshelf/ChapterContent.vue';
+import BookshelfStory from '@/views/bookshelf/DetailStory.vue';
 import ProfilePage from '@/views/profile/ProfilePage.vue';
 import ProfileSettingPage from '@/views/profile/SettingPage.vue';
 import User from '@/views/user/User.vue';
@@ -25,12 +29,33 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/search',
     name: 'Search',
-    component: SearchPage,
+    component: HomePage,
   },
   {
     path: '/bookshelf',
     name: 'Bookshelf',
-    component: HomePage,
+    component: BookshelfPage,
+  },
+  {
+    path: '/bookshelf/add',
+    name: 'Bookshelf Add',
+    component: BookshelfAdd,
+  },
+  {
+    path: '/bookshelf/story/:storyId',
+    name: 'story',
+    component: BookshelfStory,
+    props: true,
+  },
+  {
+    path: '/bookshelf/chapter',
+    name: 'Chapter',
+    component: BookshelfChapter,
+  },
+  {
+    path: '/bookshelf/chapter/content',
+    name: 'Chapter Content',
+    component: BookshelfChapterContent,
   },
   {
     path: '/profile',

@@ -14,6 +14,8 @@ export const useUserStoriesStore = defineStore("user-stories", function () {
     is_published: number | undefined | null;
     created_at: string | undefined | null;
     updated_at: string | undefined | null;
+    like: number | undefined | null;
+    chapter: number | undefined | null;
   }
 
   const userStories = ref<Story[]>([]);
@@ -21,14 +23,55 @@ export const useUserStoriesStore = defineStore("user-stories", function () {
 
   async function getUserStories() {
     try {
-      const res: AxiosResponse = await axios.get(
-        `user/${userStore.user!.id}/stories`
-      );
+      const res: AxiosResponse = await axios.get(`user/${userStore.user!.id}/stories`);
       const data: Story[] = res.data;
       userStories.value = data;
+      console.log(userStories.value);
     } catch (error) {
       console.log(error);
     }
   }
-  return { userStories, getUserStories };
+
+  async function getStoryById(storyId: number) {
+    try {
+      const res: AxiosResponse = await axios.get(`stories/${storyId}`);
+      const data: Story = res.data;
+      userStories.value = [data];
+      console.log(storyId);
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  async function saveUserStory(storyData: FormData) {
+    try {
+      const res = await axios.post(`stories`, storyData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(res.data);
+      getUserStories();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function updateUserStory(storyId: number, storyData: FormData) {
+    try {
+      const res = await axios.patch(`stories/${storyId}`, storyData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log(res.data);
+      getUserStories();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  return { userStories, getUserStories, saveUserStory, updateUserStory, getStoryById };
 });
