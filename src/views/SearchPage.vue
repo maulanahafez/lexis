@@ -2,22 +2,26 @@
   <IonPage>
     <IonHeader>
       <IonToolbar>
-        <IonButtons slot="start">
+        <!-- <IonButtons slot="start">
           <IonBackButton defaultHref="Home" />
         </IonButtons>
-        <IonTitle>Search</IonTitle>
+        <IonTitle>Search</IonTitle> -->
+        <IonSearchbar
+          v-model="searchTerm"
+          placeholder="Search stories or authors"
+          @ionChange="onSearchChange"
+        ></IonSearchbar>
       </IonToolbar>
     </IonHeader>
 
     <IonContent class="ion-padding">
-      <IonSearchbar
-        v-model="searchTerm"
-        placeholder="Search stories or authors"
-        style="border-radius: 20px; border: 1px solid black; margin-bottom: 16px;"
-        @ionChange="onSearchChange"
-      ></IonSearchbar>
+      <!-- style="
+          border-radius: 20px;
+          border: 1px solid black;
+          margin-bottom: 16px;
+        " -->
 
-      <IonList>
+      <!-- <IonList>
         <IonItem v-for="(result, index) in searchResults" :key="index" class="result-item">
           <IonLabel>
             <h2>{{ result.title || result.name }}</h2>
@@ -25,16 +29,22 @@
             <p v-if="result.story" class="story">Story: {{ result.story }}</p>
           </IonLabel>
         </IonItem>
-      </IonList>
+      </IonList> -->
+      <AppTabsVue />
     </IonContent>
-
-    <AppTabs />
   </IonPage>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonContent, IonSearchbar, IonList, IonItem, IonLabel } from '@ionic/vue';
+import AppTabsVue from '@/components/AppTabs.vue';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonSearchbar,
+  IonToolbar,
+} from '@ionic/vue';
+import { onMounted, ref } from 'vue';
 
 const searchTerm = ref('');
 const searchResults = ref([]);
@@ -48,10 +58,9 @@ const onSearchChange = async () => {
   }
 };
 
-onMounted(() => {
-});
+onMounted(() => {});
 
-const fetchSearchResults = async (query) => {
+const fetchSearchResults = async (query: any) => {
   try {
     // Ganti URL ini dengan URL API sesuai dengan proyek Anda
     const apiUrl = `https://github.com/maulanahafez/lexis_api{query}`;
@@ -68,25 +77,24 @@ const fetchSearchResults = async (query) => {
     throw error;
   }
 };
-
 </script>
 
 <style scoped>
-  .ion-padding {
-    padding: 16px;
-  }
+.ion-padding {
+  padding: 16px;
+}
 
-  .result-item {
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background-color: #f8f8f8;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+.result-item {
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background-color: #f8f8f8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  .author,
-  .story {
-    color: #666;
-    font-size: 14px;
-    margin-top: 6px;
-  }
+.author,
+.story {
+  color: #666;
+  font-size: 14px;
+  margin-top: 6px;
+}
 </style>

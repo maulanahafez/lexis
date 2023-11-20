@@ -2,27 +2,23 @@
 import AppTabs from '@/components/AppTabs.vue';
 import ProfileCard from '@/components/profilePage/ProfileCard.vue';
 import ProfileTabs from '@/components/profilePage/ProfileTabs.vue';
-import { useUserStore } from '@/store/useUserStore';
-import { useUserStoriesStore } from '@/store/useUserStoriesStore';
+import { useTargetUserStore } from '@/store/useTargetUserStore';
 import { vAutoAnimate } from '@formkit/auto-animate/vue';
 import {
-  IonButton,
+  IonBackButton,
   IonButtons,
   IonContent,
   IonHeader,
-  IonIcon,
   IonPage,
-  IonTitle,
   IonToolbar,
 } from '@ionic/vue';
-import { ellipsisVerticalOutline } from 'ionicons/icons';
+import { chevronBack } from 'ionicons/icons';
 import { onBeforeMount, ref, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 
-const router = useRouter();
 const route = useRoute();
-const userStore = useUserStore();
-const userStoriesStore = useUserStoriesStore();
+const targetUserStore = useTargetUserStore();
+const { id } = route.params;
 const activeSlide = ref<number>(1);
 const isLoading = ref<boolean>(true);
 
@@ -30,28 +26,16 @@ const changeActiveTabs = (active: number): void => {
   activeSlide.value = active;
 };
 
-const getUserStories = async () => {
-  await userStoriesStore.getUserStories();
-  isLoading.value = false;
-};
-
-const getUserStats = async () => {
-  const res = await userStore.getStats();
-};
-
 onBeforeMount(async () => {
-  await getUserStories();
-  await getUserStats();
+  await targetUserStore.getTargetUser(id);
+  isLoading.value = false;
 });
 
 watch(
-  () => route.path,
-  async (newValue, oldValue) => {
-    if (newValue === '/profile') {
-      isLoading.value = true;
-      await getUserStories();
-      await getUserStats();
-    }
+  () => route.params,
+  async (toParams, previousParams) => {
+    await targetUserStore.getTargetUser(id);
+    isLoading.value = false;
   }
 );
 </script>
@@ -59,24 +43,21 @@ watch(
   <IonPage>
     <IonHeader class="ion-no-border">
       <IonToolbar>
-        <IonTitle>Profile</IonTitle>
-        <IonButtons slot="end">
-          <IonButton @click="router.push('/profile/setting')">
-            <IonIcon :icon="ellipsisVerticalOutline"></IonIcon>
-          </IonButton>
+        <IonButtons slot="start">
+          <IonBackButton :icon="chevronBack"></IonBackButton>
         </IonButtons>
       </IonToolbar>
     </IonHeader>
     <IonContent>
       <div class="relative container mx-auto px-4 py-4">
         <ProfileCard
-          :photoUrl="userStore.user.photoUrl!"
-          :name="userStore.user.name!"
-          :username="userStore.user.username!"
-          :following="(userStore.stats.following as number)"
-          :followers="(userStore.stats.followers as number)"
-          :likes="(userStore.stats.likes as number)"
-          :bio="userStore.user.bio!"
+          :photoUrl="targetUserStore.targetUser.photoUrl!"
+          :name="targetUserStore.targetUser.name!"
+          :username="targetUserStore.targetUser.username!"
+          :following="(targetUserStore.targetStats.following as number)"
+          :followers="(targetUserStore.targetStats.followers as number)"
+          :likes="(targetUserStore.targetStats.likes as number)"
+          :bio="targetUserStore.targetUser.bio!"
         />
       </div>
       <ProfileTabs
@@ -102,7 +83,7 @@ watch(
           </div>
           <div v-if="!isLoading" class="grid grid-cols-3 gap-y-6 gap-x-2">
             <div
-              v-for="(story, index) of userStoriesStore.userStories"
+              v-for="(story, index) of targetUserStore.targetStories"
               :key="index"
               class=""
             >

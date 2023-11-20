@@ -3,6 +3,7 @@ import SearchPage from '@/views/SearchPage.vue';
 import WelcomePage from '@/views/WelcomePage.vue';
 import ProfilePage from '@/views/profile/ProfilePage.vue';
 import ProfileSettingPage from '@/views/profile/SettingPage.vue';
+import User from '@/views/user/User.vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 
@@ -40,6 +41,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/profile/setting',
     name: 'Profile Setting',
     component: ProfileSettingPage,
+  },
+  {
+    path: '/user/:id',
+    name: 'User',
+    component: User,
   },
 ];
 

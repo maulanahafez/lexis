@@ -8,6 +8,7 @@ import {
   IonIcon,
   IonPage,
   IonTitle,
+  IonToast,
   IonToolbar,
 } from '@ionic/vue';
 import { chevronBack, create, save } from 'ionicons/icons';
@@ -67,6 +68,7 @@ const cStoryPreferences = computed(() => {
 const storyPreferences = ref(cStoryPreferences.value);
 const isEdit = ref(false);
 const isPassedValidation = ref(false);
+const openedToast = ref(false);
 
 const schema = yup.object({
   username: yup.string().required().min(6),
@@ -88,6 +90,7 @@ const updateProfile = async () => {
   const data = { ...userForm.value, story_preferences: newStoryPreferences };
   const res = await userStore.updateUser(data);
   if (res) {
+    openedToast.value = true;
     router.push('/profile');
   }
 };
@@ -264,7 +267,11 @@ watch(
           </div>
         </Form>
       </div>
+      <IonToast
+        :is-open="openedToast"
+        message="Profile has been updated successfully!"
+        :duration="5000"
+      ></IonToast>
     </IonContent>
-    <!-- <AppTabs /> -->
   </IonPage>
 </template>
