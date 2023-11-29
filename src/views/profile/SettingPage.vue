@@ -11,7 +11,7 @@ import {
   IonToast,
   IonToolbar,
 } from '@ionic/vue';
-import { chevronBack, create, save } from 'ionicons/icons';
+import { chevronBack, create, logOutOutline, save } from 'ionicons/icons';
 import { ErrorMessage, Field, Form } from 'vee-validate';
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -128,6 +128,11 @@ watch(
             <IonIcon :icon="chevronBack"></IonIcon>
           </IonButton>
         </IonButtons>
+        <IonButtons slot="end">
+          <IonButton @click="userStore.googleSignOut()">
+            <IonIcon :icon="logOutOutline"></IonIcon>
+          </IonButton>
+        </IonButtons>
       </IonToolbar>
     </IonHeader>
     <IonContent>
@@ -165,16 +170,6 @@ watch(
             <p class="text-red-500 text-sm mt-1" v-if="isUsernameNotUnique">
               Username is already taken.
             </p>
-            <!-- <input
-              type="text"
-              name="username"
-              id="username"
-              v-model="userForm.username"
-              @change="handleUsernameUnique"
-              :readonly="!isEdit"
-              placeholder="Username"
-              class="inline-block w-full px-4 py-2 bg-white border border-black/20 rounded-lg focus:outline-none focus:ring focus:ring-[#0081C9]"
-            /> -->
           </div>
           <div>
             <label class="mb-1 inline-block" for="name">Name</label>
@@ -188,15 +183,6 @@ watch(
               class="inline-block w-full px-4 py-2 bg-white border border-black/20 rounded-lg focus:outline-none focus:ring focus:ring-[#0081C9]"
             />
             <ErrorMessage name="name" />
-            <!-- <input
-              type="text"
-              name="name"
-              id="name"
-              v-model="userForm.name"
-              :readonly="!isEdit"
-              placeholder="Full Name"
-              class="inline-block w-full px-4 py-2 bg-white border border-black/20 rounded-lg focus:outline-none focus:ring focus:ring-[#0081C9]"
-            /> -->
           </div>
           <div>
             <label class="mb-1 inline-block" for="bio">Bio</label>
@@ -211,9 +197,6 @@ watch(
               class="inline-block w-full px-4 py-2 bg-white border border-black/20 rounded-lg focus:outline-none focus:ring focus:ring-[#0081C9] resize-none"
             ></textarea>
           </div>
-          <!-- <div>
-            {{ storyPreferences }}
-          </div> -->
           <div>
             <label class="mb-1 inline-block">Story Preferences</label>
             <div class="flex flex-wrap gap-x-3 gap-y-2">

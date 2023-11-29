@@ -13,8 +13,11 @@ import {
   IonToolbar,
 } from '@ionic/vue';
 import { chevronBackOutline } from 'ionicons/icons';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 const userStoriesStore = useUserStoriesStore();
 const availableGenre = [
@@ -34,20 +37,17 @@ const storyData = reactive<{
   title: string | undefined;
   genre: string | undefined;
   description: string | undefined;
-  user_id: string | null | undefined;
   is_published: number | null;
   cover: File | null | undefined;
 }>({
   title: '',
   genre: '',
   description: '',
-  user_id: '',
   is_published: 1,
   cover: undefined,
 });
 
 const fileRef = ref<HTMLInputElement | null>(null);
-
 const handleFileChange = () => {
   const file = fileRef.value?.files?.[0];
   if (file) {
@@ -63,10 +63,26 @@ const handleFileChange = () => {
   storyData.cover = file;
 };
 
-const saveStory = async () => {
-  storyData.user_id = userStore.user.id;
-  await userStoriesStore.saveUserStory(storyData);
+const updateStory = async () => {
+  await userStoriesStore.updateUserStory(
+    Number(route.params.storyId),
+    storyData
+  );
 };
+
+onMounted(async () => {
+  const res = await userStoriesStore.getStoryById(Number(route.params.storyId));
+  storyData.title = res.title;
+  storyData.genre = res.genre;
+  storyData.description = res.description;
+  storyData.is_published = res.is_published;
+  storyData.cover = res.cover_path;
+  if (res.cover_path !== undefined) {
+    imageUrl.value = res.cover_path?.startsWith('h')
+      ? res.cover_path
+      : userStore.storagePath + res.cover_path?.replace('public/', '');
+  }
+});
 </script>
 
 <template>
@@ -82,7 +98,7 @@ const saveStory = async () => {
             >
               <IonIcon :icon="chevronBackOutline" class="text-black" />
             </IonButton>
-            Add Story
+            Edit Story
           </div>
         </IonTitle>
       </IonToolbar>
@@ -109,11 +125,11 @@ const saveStory = async () => {
               <div v-else>+</div>
             </label>
           </div>
-          <div class="text-base">Add Cover</div>
+          <div class="text-base">Edit Cover</div>
         </div>
       </div>
       <div class="container mx-auto px-4 py-4">
-        <form @submit.prevent="saveStory()" class="space-y-4">
+        <form @submit.prevent="updateStory()" class="space-y-4">
           <div>
             <p class="my-2 text-base">Title</p>
             <IonInput
@@ -164,7 +180,7 @@ const saveStory = async () => {
               type="submit"
               class="w-full text-base !capitalize"
             >
-              Add New Story
+              Update Story
             </IonButton>
           </div>
         </form>

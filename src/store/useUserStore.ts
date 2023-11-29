@@ -42,6 +42,7 @@ export const useUserStore = defineStore('user', function () {
 
   const isSignIn = ref<boolean>(false);
   const router = useRouter();
+  const storagePath = import.meta.env.VITE_API_STORAGE_URL;
 
   async function googleSignIn() {
     await FirebaseAuthentication.signInWithGoogle();
@@ -124,6 +125,7 @@ export const useUserStore = defineStore('user', function () {
     user,
     isSignIn,
     stats,
+    storagePath,
     googleSignIn,
     getUser,
     updateUser,

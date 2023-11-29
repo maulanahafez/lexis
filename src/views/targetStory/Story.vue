@@ -1,35 +1,28 @@
 <script setup lang="ts">
-import ChapterListVue from '@/components/bookshelf/ChapterList.vue';
-import { useFlashStore } from '@/store/useFlashStore';
+import AppTabs from '@/components/AppTabs.vue';
+import ChapterListVue from '@/components/targetStory/ChapterList.vue';
+import { useTargetStoryStore } from '@/store/useTargetStoryStore';
 import { useUserStore } from '@/store/useUserStore';
-import { useUserStoriesStore } from '@/store/useUserStoriesStore';
 import {
-  IonAlert,
-  IonButton,
+  IonBackButton,
+  IonButtons,
   IonContent,
   IonHeader,
-  IonIcon,
   IonPage,
   IonRefresher,
   IonRefresherContent,
   IonSpinner,
   IonTitle,
   IonToolbar,
-  toastController,
 } from '@ionic/vue';
-import {
-  chevronBackOutline,
-  createOutline,
-  trashOutline,
-} from 'ionicons/icons';
-import { computed, onMounted, ref, watch } from 'vue';
+import { chevronBack } from 'ionicons/icons';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const userStoriesStore = useUserStoriesStore();
+const targetStoryStore = useTargetStoryStore();
 const userStore = useUserStore();
-const flashStore = useFlashStore();
 const isLoading = ref<boolean>(true);
 
 const story = ref<{
@@ -67,7 +60,7 @@ const story = ref<{
 });
 
 const chapters = computed(() => {
-  if (story.value.chapters.length) {
+  if (story.value.chapters) {
     return story.value.chapters.slice().sort((a, b) => {
       return (a.order_num || 0) - (b.order_num || 0);
     });
@@ -75,7 +68,7 @@ const chapters = computed(() => {
 });
 
 const cover = computed(() => {
-  if (story.value.cover_path! !== undefined) {
+  if (story.value.cover_path !== undefined && story.value.cover_path !== null) {
     return story.value.cover_path?.startsWith('h')
       ? story.value.cover_path
       : userStore.storagePath + story.value.cover_path?.replace('public/', '');
@@ -83,91 +76,33 @@ const cover = computed(() => {
   return '';
 });
 
-const getStory = async (storyId: number) => {
+const getStory = async () => {
   isLoading.value = true;
-  const data = await userStoriesStore.getStoryById(storyId);
+  const data = await targetStoryStore.getStory(route.params.id);
   story.value = data;
   isLoading.value = false;
 };
 
 const handleRefresh = async (event: any) => {
-  await getStory(story.value.id!);
+  await getStory();
   event.target?.complete();
 };
 
-const handleChapterDelete = async (id: number | string) => {
-  const res = await userStoriesStore.deleteChapter(id);
-  if (res) {
-    const toast = toastController.create({
-      message: 'Berhasil Hapus Chapter',
-      position: 'bottom',
-      duration: 2000,
-    });
-    (await toast).present();
-    isLoading.value = false;
-    await getStory(Number(story.value.id));
-  }
-};
-
-const deleteStory = async () => {
-  const res = await userStoriesStore.deleteStory(Number(route.params.storyId));
-  if (res) {
-    router.push({ name: 'Bookshelf' });
-  }
-};
-
-const alertButtons = [
-  {
-    text: 'Cancel',
-    role: 'cancel',
-    handler: () => {},
-  },
-  {
-    text: 'OK',
-    role: 'confirm',
-    handler: () => {
-      deleteStory();
-    },
-  },
-];
-
-const isOpen = ref(false);
-const setOpen = (state: boolean) => {
-  isOpen.value = state;
-};
-
 onMounted(async () => {
-  if (route.params.storyId !== undefined) {
-    await getStory(Number(route.params.storyId));
+  if (route.params.id !== undefined) {
+    await getStory();
   }
 });
-
-watch(
-  [() => flashStore.show, () => route.path],
-  async ([newFlash, newPath]) => {
-    if (newFlash && newPath == `/bookshelf/${story.value.id}`) {
-      await getStory(story.value.id!);
-    }
-  }
-);
 </script>
 
 <template>
   <IonPage>
     <IonHeader>
       <IonToolbar>
-        <IonTitle>
-          <div class="flex ion-align-items-center gap-3">
-            <IonButton
-              router-link="/bookshelf"
-              fill="clear"
-              class="ion-no-padding"
-            >
-              <IonIcon :icon="chevronBackOutline" class="text-black" />
-            </IonButton>
-            Detail Story
-          </div>
-        </IonTitle>
+        <IonButtons slot="start">
+          <IonBackButton :icon="chevronBack"></IonBackButton>
+        </IonButtons>
+        <IonTitle> Detail Story </IonTitle>
       </IonToolbar>
     </IonHeader>
     <IonContent>
@@ -219,44 +154,12 @@ watch(
               {{ story.description }}
             </p>
           </div>
-          <div class="flex gap-x-2">
-            <button
-              @click="
-                router.push({
-                  name: 'Story Edit',
-                  params: { storyId: story.id },
-                })
-              "
-              type="button"
-              class="hidden bg-green-500 text-white px-4 py-3 rounded-md space-x-2"
-            >
-              <IonIcon :icon="createOutline"></IonIcon>
-              <span>Edit</span>
-            </button>
-            <button
-              @click="setOpen(true)"
-              type="button"
-              class="bg-red-500 text-white px-4 py-3 rounded-md space-x-2"
-            >
-              <IonIcon :icon="trashOutline"></IonIcon>
-              <span>Delete</span>
-            </button>
-          </div>
         </div>
 
         <!-- Row 3 -->
         <div class="container mx-auto px-4 py-4 max-w-[1280px]">
           <p class="text-lg font-semibold">Chapters</p>
-          <div class="mt-4" v-if="userStore.user.id == story.user.id">
-            <IonButton
-              :router-link="`/bookshelf/${story.id}/chapter/create`"
-              color="primary"
-              class="w-full capitalize"
-            >
-              Add New Chapter
-            </IonButton>
-          </div>
-          <div>
+          <div class="mt-2">
             <ChapterListVue
               v-for="(chapter, index) in chapters"
               :key="index"
@@ -265,19 +168,11 @@ watch(
               :title="chapter.title"
               :story_user_id="Number(story.user.id)"
               :user_id="Number(userStore.user.id!)"
-              @onDelete="handleChapterDelete"
             />
           </div>
         </div>
       </div>
-
-      <IonAlert
-        :is-open="isOpen"
-        header="Delete Confirmation!"
-        message="Apakah Anda yakin ingin menghapus Story ini?"
-        :buttons="alertButtons"
-        @didDismiss="setOpen(false)"
-      ></IonAlert>
+      <AppTabs />
     </IonContent>
   </IonPage>
 </template>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useUserStore } from './useUserStore';
 
 export const useTargetUserStore = defineStore('target-user', function () {
   interface User {
@@ -28,6 +29,8 @@ export const useTargetUserStore = defineStore('target-user', function () {
     likes: number;
   }
 
+  const userStore = useUserStore();
+
   const targetUser = ref<User>({
     id: null,
     uid: null,
@@ -44,19 +47,41 @@ export const useTargetUserStore = defineStore('target-user', function () {
     likes: 0,
   });
 
+  const isFollowsTarget = ref(false);
+
   const targetStories = ref<Story[]>([]);
 
   const getTargetUser = async (id: any) => {
-    const res = await axios.get(`/user/${id}`);
+    const res = await axios.get(`/user/${id}`, {
+      params: { from: userStore.user.id },
+    });
     targetUser.value = res.data.targetUser;
     targetStories.value = res.data.targetStories;
     targetStats.value = res.data.targetStats;
+    if (res.data.isFollowsTarget) {
+      isFollowsTarget.value = true;
+    } else {
+      isFollowsTarget.value = false;
+    }
+  };
+
+  const followTarget = async () => {
+    const res = await axios.post(`follow/${targetUser.value.id}`, {
+      follower_id: userStore.user.id,
+    });
+    if (res.data.follow) {
+      isFollowsTarget.value = true;
+    } else {
+      isFollowsTarget.value = false;
+    }
   };
 
   return {
     targetUser,
     targetStories,
     targetStats,
+    isFollowsTarget,
     getTargetUser,
+    followTarget,
   };
 });

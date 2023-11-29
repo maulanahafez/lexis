@@ -20,7 +20,7 @@ import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.bubble.css';
 import '@vueup/vue-quill/dist/vue-quill.core.css';
 import { chevronBack, saveOutline } from 'ionicons/icons';
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
@@ -29,7 +29,8 @@ const useUserStories = useUserStoriesStore();
 const flashStore = useFlashStore();
 
 const formData = reactive({
-  story_id: route.params.storyId,
+  id: route.params.chapterId,
+  story_id: null,
   title: '',
   order_num: '',
   content: '',
@@ -45,10 +46,10 @@ const toggleOpen = (open: boolean) => {
 
 const handleSubmit = async () => {
   isLoading.value = true;
-  const res = await useUserStories.saveChapter(formData);
+  const res = await useUserStories.updateChapter(formData.id, formData);
   if (res) {
     const toast = toastController.create({
-      message: 'Berhasil Simpan Chapter',
+      message: 'Berhasil Update Chapter',
       position: 'bottom',
       duration: 2000,
     });
@@ -58,13 +59,22 @@ const handleSubmit = async () => {
     router.push(`/bookshelf/${formData.story_id}`);
   }
 };
+
+onMounted(async () => {
+  const res = await useUserStories.getChapter(formData.id);
+  formData.story_id = res.story_id;
+  formData.title = res.title;
+  formData.order_num = res.order_num;
+  formData.content = res.content;
+  formData.is_published = res.is_published;
+});
 </script>
 
 <template>
   <IonPage>
     <IonHeader>
       <IonToolbar>
-        <IonTitle> Add Chapter </IonTitle>
+        <IonTitle> Edit Chapter </IonTitle>
         <IonButtons slot="start">
           <IonBackButton :icon="chevronBack"></IonBackButton>
         </IonButtons>
@@ -107,7 +117,6 @@ const handleSubmit = async () => {
               >
                 Yes
               </label>
-
               <input
                 type="radio"
                 id="False"
@@ -138,7 +147,7 @@ const handleSubmit = async () => {
               class="flex items-center gap-x-2 justify-center w-full px-4 py-3 rounded-md bg-green-500 text-white cursor-pointer hover:ring-2 hover:ring-green-500"
             >
               <IonIcon class="text-lg" :icon="saveOutline"></IonIcon>
-              <span>Save</span>
+              <span>Update</span>
             </button>
           </div>
         </div>
@@ -148,9 +157,9 @@ const handleSubmit = async () => {
           <IonToolbar>
             <IonTitle>Content</IonTitle>
             <IonButtons slot="end">
-              <IonButton @click="toggleOpen(false)" class="!capitalize"
-                >Close</IonButton
-              >
+              <IonButton @click="toggleOpen(false)" class="!capitalize">
+                Close
+              </IonButton>
             </IonButtons>
           </IonToolbar>
         </IonHeader>
@@ -159,8 +168,8 @@ const handleSubmit = async () => {
             <QuillEditor
               theme="bubble"
               toolbar="full"
-              v-model:content="formData.content"
               content-type="html"
+              v-model:content="formData.content"
             ></QuillEditor>
           </div>
         </IonContent>

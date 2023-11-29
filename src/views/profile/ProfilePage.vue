@@ -12,10 +12,11 @@ import {
   IonHeader,
   IonIcon,
   IonPage,
+  IonSpinner,
   IonTitle,
   IonToolbar,
 } from '@ionic/vue';
-import { ellipsisVerticalOutline } from 'ionicons/icons';
+import { ellipsisVerticalOutline, heart } from 'ionicons/icons';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -32,7 +33,10 @@ const changeActiveTabs = (active: number): void => {
 
 const getUserStories = async () => {
   await userStoriesStore.getUserStories();
-  isLoading.value = false;
+};
+
+const getUserLiked = async () => {
+  await userStoriesStore.getUserLiked();
 };
 
 const getUserStats = async () => {
@@ -40,8 +44,11 @@ const getUserStats = async () => {
 };
 
 onBeforeMount(async () => {
+  isLoading.value = true;
   await getUserStories();
   await getUserStats();
+  await getUserLiked();
+  isLoading.value = false;
 });
 
 watch(
@@ -51,6 +58,8 @@ watch(
       isLoading.value = true;
       await getUserStories();
       await getUserStats();
+      await getUserLiked();
+      isLoading.value = false;
     }
   }
 );
@@ -70,6 +79,8 @@ watch(
     <IonContent>
       <div class="relative container mx-auto px-4 py-4">
         <ProfileCard
+          :isProfile="true"
+          :id="Number(userStore.user.id)"
           :photoUrl="userStore.user.photoUrl!"
           :name="userStore.user.name!"
           :username="userStore.user.username!"
@@ -104,7 +115,9 @@ watch(
             <div
               v-for="(story, index) of userStoriesStore.userStories"
               :key="index"
-              class=""
+              @click="
+                router.push({ name: 'Target Story', params: { id: story.id } })
+              "
             >
               <img
                 :src="story.cover_path!"
@@ -118,16 +131,28 @@ watch(
           class="relative container mx-auto px-4 pt-4 pb-20"
           v-if="activeSlide === 2"
         >
-          <div class="grid grid-cols-3 gap-y-6">
-            <div
-              class="w-24 h-36 bg-green-200 mx-auto rounded-md shadow-sm focus:brightness-70 ease-in-out transition-all"
-            ></div>
-            <div
-              class="w-24 h-36 bg-green-200 mx-auto rounded-md shadow-sm focus:brightness-70 ease-in-out transition-all"
-            ></div>
-            <div
-              class="w-24 h-36 bg-green-200 mx-auto rounded-md shadow-sm focus:brightness-70 ease-in-out transition-all"
-            ></div>
+          <div
+            v-if="!isLoading"
+            v-for="(chapter, index) of userStoriesStore.userLiked"
+            @click="
+              router.push({
+                name: 'Target Chapter',
+                params: { id: chapter.chapter.id },
+              })
+            "
+            class="border-b border-gray-400 py-3 px-2 hover:bg-gray-50"
+          >
+            <p class="text-lg font-medium line-clamp-1">
+              {{ chapter.chapter.story.title }}
+            </p>
+            <p class="mt-1 line-clamp-1">{{ chapter.chapter.title }}</p>
+            <div class="mt-2 text-gray-400 text-sm flex items-center gap-x-3">
+              <IonIcon :icon="heart" color="danger"></IonIcon>
+              <span>{{ userStoriesStore.dateLiked[index] }}</span>
+            </div>
+          </div>
+          <div v-else class="mt-40 flex items-center justify-center">
+            <IonSpinner name="dots" class="scale-[200%]"></IonSpinner>
           </div>
         </div>
       </div>
