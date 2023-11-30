@@ -161,6 +161,7 @@ onMounted(async () => {
           <p class="text-lg font-semibold">Chapters</p>
           <div class="mt-2">
             <ChapterListVue
+              v-if="chapters?.length! >0"
               v-for="(chapter, index) in chapters"
               :key="index"
               :id="chapter.id"
@@ -169,6 +170,9 @@ onMounted(async () => {
               :story_user_id="Number(story.user.id)"
               :user_id="Number(userStore.user.id!)"
             />
+            <div v-else class="text-lg text-gray-400 font-medium">
+              No Chapters
+            </div>
           </div>
         </div>
       </div>

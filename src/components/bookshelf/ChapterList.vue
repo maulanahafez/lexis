@@ -17,7 +17,6 @@ const emit = defineEmits<{
 }>();
 
 const deleteChapter = () => {
-  console.log(selectedId.value);
   emit('onDelete', selectedId.value!);
 };
 

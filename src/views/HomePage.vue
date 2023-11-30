@@ -5,16 +5,78 @@ import {
   IonContent,
   IonHeader,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonTitle,
   IonToolbar,
 } from '@ionic/vue';
-import { kButton } from 'konsta/vue';
-import { ref } from 'vue';
+import axios from 'axios';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-const store = useUserStore();
-const targetUser = ref(1);
-const targetStory = ref(1);
-const targetChapter = ref(1);
+interface Recommendation {
+  [category: string]: {
+    id?: number | null;
+    title?: string | null;
+    genre?: string | null;
+    cover_path?: string | null;
+    name?: string | null;
+    photoUrl?: string | null;
+    user_id?: string | null;
+    created_at?: string | null;
+  }[];
+}
+
+const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+// const stories = ref({});
+const stories = ref<Recommendation>({});
+
+// const cover = computed(() => {
+//   return stories.((category: any) => {
+//     if (category.cover_path !== undefined && category.cover_path !== null) {
+//       return category.cover_path.startsWith('h')
+//         ? category.cover_path
+//         : userStore.storagePath + category.cover_path.replace('public/', '');
+//     }
+//     return '';
+//   });
+// });
+
+const getRecommendation = async () => {
+  const res = await axios.post('stories/recommendation', {
+    preferences: userStore.user.story_preferences?.split('~') ?? [],
+  });
+  stories.value = res.data;
+};
+
+const handleRefresh = async (event: any) => {
+  await getRecommendation();
+  event.target?.complete();
+};
+
+onMounted(async () => {
+  if (userStore.user.id) {
+    await getRecommendation();
+  }
+});
+
+watch(
+  () => route.path,
+  async (newValue, oldValue) => {
+    if (newValue === '/home' && userStore.user.id) {
+      await getRecommendation();
+    }
+  }
+);
+
+watch(
+  () => userStore.user.id,
+  async () => {
+    await getRecommendation();
+  }
+);
 </script>
 
 <template>
@@ -26,276 +88,65 @@ const targetChapter = ref(1);
     </IonHeader>
 
     <IonContent>
-      <div class="hidden container mx-auto px-4 py-2 space-y-4">
-        <kButton @click="store.googleSignOut()">Sign Out</kButton>
-        <div>{{ store.user }}</div>
-        <div @click="$router.push('/profile')" class="cursor-pointer">
-          Profile
-        </div>
-        <div>
-          <button
-            type="button"
-            @click="
-              $router.push({
-                name: 'User',
-                params: { id: targetUser },
-              })
-            "
-            class="px-4 py-2 bg-green-500 text-white rounded-md text-sm"
-          >
-            User {{ targetUser }}
-          </button>
-          <input
-            type="text"
-            v-model="targetUser"
-            class="mt-4 w-full inline-block bg-white px-4 py-1 rounded-md border border-black/20"
-          />
-        </div>
-        <div>
-          <button
-            type="button"
-            @click="$router.push(`/story/${targetStory}`)"
-            class="px-4 py-2 bg-green-500 text-white rounded-md text-sm"
-          >
-            Story {{ targetStory }}
-          </button>
-          <input
-            type="text"
-            v-model="targetStory"
-            class="mt-4 w-full inline-block bg-white px-4 py-1 rounded-md border border-black/20"
-          />
-        </div>
-        <div>
-          <button
-            type="button"
-            @click="$router.push(`/chapter/${targetChapter}`)"
-            class="px-4 py-2 bg-green-500 text-white rounded-md text-sm"
-          >
-            Chapter {{ targetChapter }}
-          </button>
-          <input
-            type="text"
-            v-model="targetChapter"
-            class="mt-4 w-full inline-block bg-white px-4 py-1 rounded-md border border-black/20"
-          />
-        </div>
-      </div>
-      <div class="container mx-auto px-4 py-2 space-y-4">
-        <div class="story">
-          <h5>Discovery for you</h5>
-          <div class="slide">
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
+      <IonRefresher slot="fixed" @ionRefresh="handleRefresh($event)">
+        <IonRefresherContent></IonRefresherContent>
+      </IonRefresher>
+      <div class="container mx-auto px-4 pt-2 pb-24 space-y-12">
+        <template v-for="(story, category) of stories" :key="category">
+          <div class="story" v-if="category !== 'user'">
+            <h4>{{ category }} Stories</h4>
+            <div class="slide mt-4">
+              <div
+                @click="
+                  router.push({ name: 'Target Story', params: { id: item.id } })
+                "
+                class="slides cursor-pointer"
+                v-for="(item, index) of story"
+                :key="String(item.id)"
+              >
+                <img
+                  :src="item.cover_path!"
+                  alt=""
+                  class="object-cover object-center rounded-md w-24 h-36"
+                />
+                <p
+                  style="font-size: small; align-items: center"
+                  class="line-clamp-3"
+                >
+                  {{ item.title }}
+                </p>
+              </div>
             </div>
           </div>
-          <!-- <div @click="$router.push(`/user/${targetUser}`)" class="mt-10">Ke Target User {{ targetUser }}</div>
-        <input type="text" v-model="targetUser" class="bg-white px-4 py-1 rounded-md border border-black/20" /> -->
-        </div>
+          <div v-else>
+            <h4>Authors You Might Like</h4>
+            <div class="slide mt-4 !gap-x-4">
+              <div
+                class="slides !w-[80px] cursor-pointer"
+                v-for="(item, index) of story"
+                :key="index"
+                @click="router.push(`user/${item.user_id}`)"
+              >
+                <img
+                  :src="item.photoUrl!"
+                  alt=""
+                  class="w-full h-[80px] object-cover object-center aspect-square rounded-full"
+                />
+                <p
+                  style="font-size: small; align-items: center"
+                  class="mt-2 line-clamp-2"
+                >
+                  {{ item.name }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- <pre>{{ cover }}</pre> -->
+        <!-- <pre>{{ stories }}</pre> -->
+        <!-- <pre>{{ userStore.user.story_preferences?.split('~') }}</pre> -->
 
-        <div class="popular">
-          <h5>Popular Stories</h5>
-          <div class="slide">
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="popular">
-          <h5>Author you might like</h5>
-          <div class="slide">
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/people.jpg"
-                alt=""
-                style="width: 100px; height: 100px; border-radius: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/people.jpg"
-                alt=""
-                style="width: 100px; height: 100px; border-radius: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/people.jpg"
-                alt=""
-                style="width: 100px; height: 100px; border-radius: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/people.jpg"
-                alt=""
-                style="width: 100px; height: 100px; border-radius: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="adventure">
-          <h5>Adventure Stories</h5>
-          <div class="slide">
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-            <div class="slides">
-              <img
-                src="/src/assets/bookshelf/img.png"
-                alt=""
-                style="width: 100%"
-              />
-              <p style="font-size: small; align-items: center">
-                Lightfall Lorem Ipsum Dolor
-              </p>
-            </div>
-          </div>
-        </div>
+        <div class="popular"></div>
       </div>
 
       <div class="bar"></div>
@@ -305,21 +156,15 @@ const targetChapter = ref(1);
 </template>
 
 <style scoped>
-.cursor-pointer {
-  display: flex;
-  justify-content: end;
-}
-
 .slides {
   flex-shrink: 0;
   scroll-snap-type: x var(--tw-scroll-snap-strictness);
-  column-gap: 1rem;
   width: 100px;
 }
 .slide {
   display: flex;
   flex-direction: row;
-  column-gap: 1rem;
+  column-gap: 0.5rem;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -328,8 +173,5 @@ const targetChapter = ref(1);
 
 .slide::-webkit-scrollbar {
   display: none;
-}
-.ion-padding {
-  padding: 16px;
 }
 </style>

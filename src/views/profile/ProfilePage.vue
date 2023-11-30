@@ -120,7 +120,7 @@ watch(
               "
             >
               <img
-                :src="story.cover_path!"
+                :src="userStoriesStore.coverPath[index]"
                 alt=""
                 class="w-24 h-36 mx-auto rounded-md cursor-pointer shadow-sm hover:opacity-70 focus:opacity-70 object-cover ease-in-out transition-opacity duration-200"
               />

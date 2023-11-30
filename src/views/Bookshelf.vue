@@ -51,7 +51,7 @@ watch(
       >
         Add New Story
       </IonButton>
-      <div v-if="!isLoading">
+      <div v-if="!isLoading" class="pb-36">
         <div
           v-for="(story, index) in userStoriesStore.userStories"
           :key="index"

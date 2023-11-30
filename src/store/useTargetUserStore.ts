@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useUserStore } from './useUserStore';
 
 export const useTargetUserStore = defineStore('target-user', function () {
@@ -29,6 +29,20 @@ export const useTargetUserStore = defineStore('target-user', function () {
     likes: number;
   }
 
+  interface Chapter {
+    chapter_id?: number | null;
+    user_id?: number | null;
+    created_at?: string | null;
+    chapter: {
+      id?: number | null;
+      title?: string | null;
+      story: {
+        id?: number | null;
+        title?: string | null;
+      };
+    };
+  }
+
   const userStore = useUserStore();
 
   const targetUser = ref<User>({
@@ -50,6 +64,14 @@ export const useTargetUserStore = defineStore('target-user', function () {
   const isFollowsTarget = ref(false);
 
   const targetStories = ref<Story[]>([]);
+
+  const targetLiked = ref<Chapter[]>([]);
+
+  const dateLiked = computed(() => {
+    return targetLiked.value.map((chapter) => {
+      return new Date(chapter.created_at!).toLocaleString();
+    });
+  });
 
   const getTargetUser = async (id: any) => {
     const res = await axios.get(`/user/${id}`, {
@@ -76,12 +98,24 @@ export const useTargetUserStore = defineStore('target-user', function () {
     }
   };
 
+  async function getTargetLiked(id: any) {
+    try {
+      const res = await axios.get(`user/${id}/likes`);
+      targetLiked.value = res.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return {
     targetUser,
     targetStories,
     targetStats,
+    targetLiked,
     isFollowsTarget,
+    dateLiked,
     getTargetUser,
     followTarget,
+    getTargetLiked,
   };
 });

@@ -49,6 +49,17 @@ export const useUserStoriesStore = defineStore('user-stories', function () {
     });
   });
 
+  const coverPath = computed(() => {
+    return userStories.value.map((story) => {
+      if (story.cover_path! !== undefined) {
+        return story.cover_path!.startsWith('h')
+          ? story.cover_path!
+          : userStore.storagePath + story.cover_path!.replace('public/', '');
+      }
+      return '';
+    });
+  });
+
   async function getUserStories() {
     try {
       const res: AxiosResponse = await axios.get(
@@ -158,6 +169,7 @@ export const useUserStoriesStore = defineStore('user-stories', function () {
     userStory,
     userLiked,
     dateLiked,
+    coverPath,
     getUserStories,
     getUserLiked,
     saveUserStory,

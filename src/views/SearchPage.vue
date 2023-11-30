@@ -1,40 +1,3 @@
-<template>
-  <IonPage>
-    <IonHeader>
-      <IonToolbar>
-        <!-- <IonButtons slot="start">
-          <IonBackButton defaultHref="Home" />
-        </IonButtons>
-        <IonTitle>Search</IonTitle> -->
-        <IonSearchbar
-          v-model="searchTerm"
-          placeholder="Search stories or authors"
-          @ionChange="onSearchChange"
-        ></IonSearchbar>
-      </IonToolbar>
-    </IonHeader>
-
-    <IonContent class="ion-padding">
-      <!-- style="
-          border-radius: 20px;
-          border: 1px solid black;
-          margin-bottom: 16px;
-        " -->
-
-      <!-- <IonList>
-        <IonItem v-for="(result, index) in searchResults" :key="index" class="result-item">
-          <IonLabel>
-            <h2>{{ result.title || result.name }}</h2>
-            <p v-if="result.author" class="author">Author: {{ result.author }}</p>
-            <p v-if="result.story" class="story">Story: {{ result.story }}</p>
-          </IonLabel>
-        </IonItem>
-      </IonList> -->
-      <AppTabsVue />
-    </IonContent>
-  </IonPage>
-</template>
-
 <script setup lang="ts">
 import AppTabsVue from '@/components/AppTabs.vue';
 import {
@@ -44,57 +7,130 @@ import {
   IonSearchbar,
   IonToolbar,
 } from '@ionic/vue';
+import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+interface Recommendation {
+  [category: string]: {
+    id?: number | null;
+    title?: string | null;
+    genre?: string | null;
+    cover_path?: string | null;
+    name?: string | null;
+    photoUrl?: string | null;
+    user_id?: string | null;
+    created_at?: string | null;
+  }[];
+}
+
+const router = useRouter();
 const searchTerm = ref('');
-const searchResults = ref([]);
-
-const onSearchChange = async () => {
-  try {
-    const results = await fetchSearchResults(searchTerm.value);
-    searchResults.value = results;
-  } catch (error) {
-    console.error('Error fetching search results:', error);
-  }
+const searchResults = ref<Recommendation>({});
+const getStories = async () => {
+  const res = await axios.get('stories/search', {
+    params: { s: searchTerm.value },
+  });
+  searchResults.value = res.data;
 };
 
 onMounted(() => {});
-
-const fetchSearchResults = async (query: any) => {
-  try {
-    // Ganti URL ini dengan URL API sesuai dengan proyek Anda
-    const apiUrl = `https://github.com/maulanahafez/lexis_api{query}`;
-    const response = await fetch(apiUrl);
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching search results:', error);
-    throw error;
-  }
-};
 </script>
 
+<template>
+  <IonPage>
+    <IonHeader>
+      <IonToolbar>
+        <IonSearchbar
+          class="!shadow-none"
+          v-model="searchTerm"
+          placeholder="Search stories"
+          @ionBlur="getStories()"
+        ></IonSearchbar>
+      </IonToolbar>
+    </IonHeader>
+
+    <IonContent>
+      <div class="container mx-auto px-4 pt-2 pb-24 space-y-12">
+        <template v-for="(story, category) of searchResults" :key="category">
+          <div class="story" v-if="category !== 'authors'">
+            <h4>Stories</h4>
+            <div class="slide mt-4">
+              <div
+                @click="
+                  router.push({ name: 'Target Story', params: { id: item.id } })
+                "
+                class="slides cursor-pointer"
+                v-for="(item, index) of story"
+                :key="String(item.id)"
+              >
+                <img
+                  :src="item.cover_path!"
+                  alt=""
+                  class="object-cover object-center rounded-md w-24 h-36"
+                />
+                <p
+                  style="font-size: small; align-items: center"
+                  class="line-clamp-3"
+                >
+                  {{ item.title }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <h4>Authors</h4>
+            <div class="slide mt-4 !gap-x-4">
+              <div
+                class="slides !w-[80px] cursor-pointer"
+                v-for="(item, index) of story"
+                :key="index"
+                @click="router.push(`user/${item.user_id}`)"
+              >
+                <img
+                  :src="item.photoUrl!"
+                  alt=""
+                  class="w-full h-[80px] object-cover object-center aspect-square rounded-full"
+                />
+                <p
+                  style="font-size: small; align-items: center"
+                  class="mt-2 line-clamp-2"
+                >
+                  {{ item.name }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- <p>{{ searchTerm }}</p>
+        <pre
+          >{{ searchResults }}
+        </pre> -->
+      </div>
+      <AppTabsVue />
+    </IonContent>
+  </IonPage>
+</template>
+
 <style scoped>
-.ion-padding {
-  padding: 16px;
+.sc-ion-searchbar-md-h {
+  --box-shadow: none !important;
 }
-
-.result-item {
-  border-radius: 12px;
-  margin-bottom: 12px;
-  background-color: #f8f8f8;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.slides {
+  flex-shrink: 0;
+  scroll-snap-type: x var(--tw-scroll-snap-strictness);
+  width: 100px;
 }
-
-.author,
-.story {
-  color: #666;
-  font-size: 14px;
-  margin-top: 6px;
+.slide {
+  display: flex;
+  flex-direction: row;
+  column-gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-align: start;
+}
+.slide::-webkit-scrollbar {
+  display: none;
 }
 </style>

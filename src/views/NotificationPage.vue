@@ -15,12 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { IonButton, IonIcon, IonTitle } from "@ionic/vue";
-import { arrowBackOutline } from "ionicons/icons";
-import { ref } from "vue";
+import { IonButton, IonIcon, IonTitle } from '@ionic/vue';
+import { arrowBackOutline } from 'ionicons/icons';
 
 const goBack = () => {
   // Tambahkan logika navigasi ke halaman sebelumnya
-  console.log("Kembali ke halaman sebelumnya");
 };
 </script>
