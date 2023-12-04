@@ -36,6 +36,8 @@ import { QuillEditor } from '@vueup/vue-quill';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyCB3yJBOXXPHSY3dHT249exPV1mchutZr0',
   authDomain: 'lexis-ca8e5.firebaseapp.com',

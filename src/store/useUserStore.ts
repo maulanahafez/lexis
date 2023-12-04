@@ -5,7 +5,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export const useUserStore = defineStore('user', function () {
-  // FirebaseAuthentication.signInWithGoogle();
   interface User {
     id?: string | undefined | null;
     uid?: string | undefined | null;
@@ -43,12 +42,17 @@ export const useUserStore = defineStore('user', function () {
   const isSignIn = ref<boolean>(false);
   const router = useRouter();
   const storagePath = import.meta.env.VITE_API_STORAGE_URL;
+  const errors = ref('');
 
   async function googleSignIn() {
-    await FirebaseAuthentication.signInWithGoogle();
-    isSignIn.value = true;
-    await getUser();
-    router.push('/home');
+    try {
+      await FirebaseAuthentication.signInWithGoogle();
+      isSignIn.value = true;
+      await getUser();
+      router.push('/home');
+    } catch (error) {
+      errors.value = String(error);
+    }
   }
 
   async function googleSignOut() {
@@ -126,6 +130,7 @@ export const useUserStore = defineStore('user', function () {
     isSignIn,
     stats,
     storagePath,
+    errors,
     googleSignIn,
     getUser,
     updateUser,
